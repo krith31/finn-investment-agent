@@ -1,4 +1,4 @@
-import os, sqlite3, json, re, hashlib
+import os, sqlite3, json, re, hashlib, tempfile
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
 from fastapi import FastAPI, HTTPException
@@ -7,7 +7,8 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 ROOT=Path(__file__).resolve().parents[1]
-DB=Path(os.getenv('FINN_DB',str(ROOT/'finn.db')))
+HOSTED_DEMO=bool(os.getenv('VERCEL'))
+DB=Path(os.getenv('FINN_DB',str(Path(tempfile.gettempdir())/'finn-demo.db' if HOSTED_DEMO else ROOT/'finn.db')))
 app=FastAPI(title='FINN intelligence API')
 def db():
  c=sqlite3.connect(DB); c.row_factory=sqlite3.Row; return c
@@ -86,7 +87,7 @@ def research(q:Query):
  hits=[r for score,r in ranked if score>0][:5]
  return {'mode':'Extractive evidence retrieval — no generative model configured','answer':'Relevant primary-source passages are shown below. Interpretation requires analyst review.' if hits else 'Insufficient evidence. Add a relevant annual-report, results or earnings-call excerpt to investigate this question.','citations':hits,'kind':'FACT','warning':'User-supplied excerpts are not independently authenticated.'}
 @app.get('/api/health')
-def health():return {'status':'ok','mode':'demonstration','market_frequency':'EOD','live_integrations':False}
+def health():return {'status':'ok','mode':'demonstration','market_frequency':'EOD','live_integrations':False,'temporary_storage':HOSTED_DEMO}
 app.mount('/static',StaticFiles(directory=ROOT/'static'),name='static')
 @app.get('/')
 def index():return FileResponse(ROOT/'static/index.html')

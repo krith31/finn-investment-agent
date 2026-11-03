@@ -22,6 +22,13 @@ function styleWatchRules(){
 }
 new MutationObserver(styleWatchRules).observe(document.querySelector('#app'),{childList:true,subtree:true});
 styleWatchRules();
+fetch('/api/health').then(r=>r.json()).then(status=>{
+ if(!status.temporary_storage)return;
+ const note=document.createElement('p');note.className='notice';
+ note.textContent='Hosted demo: saved rules, acknowledgements and excerpts use temporary shared storage and may reset or vary between requests. Use public sample excerpts only. Local installation provides persistent SQLite storage.';
+ document.querySelector('header').after(note);
+ document.querySelector('#rules')?.insertAdjacentHTML('beforeend','<p class="sub">Hosted storage is temporary.</p>');
+}).catch(()=>{});
 document.querySelector('#data-info').onclick=()=>{
  document.querySelector('#evidence').innerHTML='<h2>About this workspace</h2><p>Prices, volumes and corporate announcements are synthetic demonstration data, not current market information.</p><p>The EOD snapshot is dated 30 October 2026. Research retrieves only the source excerpts you add. Live feeds and generative AI are not connected.</p>';
  document.querySelector('#drawer').showModal();

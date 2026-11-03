@@ -66,6 +66,12 @@ Tests cover portfolio size, filtering, invalid thresholds, persistence, acknowle
 
 ## Deploy
 
+### Vercel demo
+
+The repository includes `vercel.json` for FastAPI detection. Import `krith31/finn-investment-agent` into Vercel with the repository root as Root Directory. The application entrypoint is `app/main.py`. No API keys are required. Vercel mode stores SQLite in its temporary directory and displays a prominent storage warning: settings, acknowledgements and excerpts can reset or vary between function instances, and are shared between visitors. Do not enter private data. Durable multi-user use requires a hosted database and authentication. Deployment is only verified once a successful Vercel deployment and live HTTP checks have completed.
+
+### Container with persistent storage
+
 This Python application requires a container/Python host; static-only hosting cannot run its backend. Deployment has not been performed.
 
 ```sh
